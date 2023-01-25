@@ -1,7 +1,7 @@
 import { TwitterApi } from "twitter-api-v2";
 import { config } from "../config/config";
 
-export class TwitterClientAuth {
+export class TwitterClientAuthService {
     public initClient() {
         return new TwitterApi({
             appKey: config.TWITTER.CONSUMER_KEY,

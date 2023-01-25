@@ -1,20 +1,14 @@
 import express from 'express'
 import { config } from './config/config'
-import { TwitterClientAuth } from './services/tiwtter-client-auth'
-import { ETwitterStreamEvent, TwitterApi } from 'twitter-api-v2'
-import { TwitterDm } from './services/twitter-dm'
+import configureRouter from './routes/index.routes'
+import configureDI from './app.module'
 
+//init Express APP
 const app = express()
 const port = config.APPLICATION.PORT
-const twitterClientAuth = new TwitterClientAuth();
-const client: TwitterApi = twitterClientAuth.initClient();
 
-app.get('/', async (_, res) => {
-
-  const titterDms = new TwitterDm(client);
-  const messages = await titterDms.getListDirectMessage();
-
-  res.status(200).send(messages);
-})
+//init modules & routes
+const diContainer = configureDI();
+configureRouter(app, diContainer)
 
 app.listen(port, () => console.log(`Application running on port ${port}`))

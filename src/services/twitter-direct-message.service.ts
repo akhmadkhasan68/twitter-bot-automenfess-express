@@ -1,7 +1,7 @@
 import { config } from "../config/config";
 import { DirectMessageCreateV1, EDirectMessageEventTypeV1, ReceivedMessageCreateEventV1, TweetStream, TwitterApi } from "twitter-api-v2";
 
-export class TwitterDm {
+export class TwitterDirectMessageService {
     constructor(
         private readonly twitterClient: TwitterApi
     ) {}
@@ -14,12 +14,14 @@ export class TwitterDm {
             if (event.type === EDirectMessageEventTypeV1.Create) {
                 const keywords: string[] = config.TWITTER.KEYWORDS;
 
-                for(let keyword of keywords) {
-                    console.log(keyword);
+                const textMessage = event[EDirectMessageEventTypeV1.Create].message_data.text;
+                const checkStringKeyword = keywords.some(keyword => {
+                    return textMessage.toLowerCase().includes(keyword.toLowerCase());
+                });
+
+                if(checkStringKeyword) {
+                    data.push(event);
                 }
-                // const checkKeyword = event[EDirectMessageEventTypeV1.Create].message_data.text.toLowerCase().includes(som)
-                // console.log(checkKeyword)
-                data.push(event);
             }
         }
 
