@@ -1,11 +1,12 @@
 import { Table, Model, Column, DataType } from "sequelize-typescript";
 import { DirectMessageStatusEnum } from "../../utils/enums/direct-message-status.enum";
+import { IDirectMessage } from "../interfaces/direct-message.interface";
 
 @Table({
     timestamps: false,
     tableName: "direct_messages",
 })
-export class DirectMessageModel extends Model {
+export class DirectMessageModel extends Model implements IDirectMessage {
     @Column({
         type: DataType.UUID,
         allowNull: false,
@@ -49,7 +50,7 @@ export class DirectMessageModel extends Model {
         allowNull: false,
         defaultValue: DirectMessageStatusEnum.PENDING
     })
-    status: string;
+    status: DirectMessageStatusEnum;
 
     // @Column({
     //     type: DataType.DATE,
