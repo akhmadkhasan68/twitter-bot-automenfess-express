@@ -52,11 +52,26 @@ export class TwitterDirectMessageService {
         try {
             const data = await this.twitterClient.v1.sendDm({
                 recipient_id: recepientId,
-                text: 'Hello Jack!',
+                text: text,
                 // attachment: {
                 //   type: 'media',
                 //   media: { id: '24024092' },
                 // },
+                quick_reply: {
+                    type: 'options',
+                    options: [
+                        {
+                            label: "✅ Ya, Kirim",
+                            description: "Pilih ini jika anda yakin ingin mengirim pesan diatas",
+                            metadata: "accept_id_1"
+                        },
+                        {
+                            label: "⛔️ Batalkan",
+                            description: "Pilih ini jika anda ingin membatalkan pesan diatas",
+                            metadata: "cancel_id_2"
+                        },
+                    ]
+                }
             });
 
 

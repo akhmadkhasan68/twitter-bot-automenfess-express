@@ -12,4 +12,12 @@ export const config = {
         ACCESS_SECRET: process.env.TWITTER_ACCESS_SECRET || '',
         KEYWORDS: JSON.parse(process.env.TWITTER_KEYWORDS) || [],
     },
+    DATABASE: {
+        HOST: process.env.DB_HOST || 'localhost',
+        PORT: process.env.DB_PORT || '3306',
+        USERNAME: process.env.DB_USERNAME || '',
+        PASSWORD: process.env.DB_PASSWORD || '',
+        NAME: process.env.DB_NAME || '',
+        DIALECT: process.env.DB_DIALECT || 'mysql'
+    }
 };
