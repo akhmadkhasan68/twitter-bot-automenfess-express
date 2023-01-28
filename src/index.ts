@@ -17,7 +17,7 @@ configureRouter(app, diContainer)
 
 const database = new Database();
 
-database.initDatabaseSession().authenticate().then(response => {
+database.getSession().authenticate().then(response => {
     console.log('Connection has been established successfully.');
 }).catch(error => {
     console.error('Unable to connect to the database:', error);

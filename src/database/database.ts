@@ -18,4 +18,8 @@ export class Database {
             }
         )
     }
+
+    public getSession(): Sequelize {
+        return this.sequelize;
+    }
 }

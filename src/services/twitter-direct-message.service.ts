@@ -1,5 +1,6 @@
 import { config } from "../config/config";
-import { DirectMessageCreateV1, DirectMessageCreateV1Result, EDirectMessageEventTypeV1, ReceivedDMEventV1, TwitterApi } from "twitter-api-v2";
+import { DirectMessageCreateV1, DirectMessageCreateV1Result, EDirectMessageEventTypeV1, ReceivedDMEventV1, TwitterApi, ReceivedMessageCreateEventV1 } from "twitter-api-v2";
+import { fromBuffer } from 'file-type';
 
 export class TwitterDirectMessageService {
     constructor(
@@ -15,12 +16,34 @@ export class TwitterDirectMessageService {
                 if (event.type === EDirectMessageEventTypeV1.Create) {
                     const keywords: string[] = config.TWITTER.KEYWORDS;
 
-                    const textMessage = event[EDirectMessageEventTypeV1.Create].message_data.text;
+                    const directMessageData = event[EDirectMessageEventTypeV1.Create];
+                    const messageData = directMessageData.message_data;
+
+                    const textMessage = messageData.text;
                     const checkStringKeyword = keywords.some(keyword => {
                         return textMessage.toLowerCase().includes(keyword.toLowerCase());
                     });
 
                     if(checkStringKeyword) {
+                        // const mediaIds: string[] = [];
+                        // if(messageData.attachment) {
+                        //     const media: Buffer = await this.twitterClient.v1.downloadDmImage(messageData?.attachment.media.media_url);
+                        //     const { mime } = await fromBuffer(media);
+                        //     const mediaId = await this.twitterClient.v1.uploadMedia(media, {
+                        //         mimeType: mime
+                        //     });
+                        //     mediaIds.push(mediaId);
+                        // }
+                        
+                        // const tweet = await this.twitterClient.v1.tweet(textMessage, {
+                        //     media_ids: mediaIds
+                        // })
+
+                        await this.twitterClient.v1.sendDm({
+                            recipient_id: directMessageData.sender_id,
+                            text: "Hore tweet anda berhasil dikirim! 🎉",
+                        });
+
                         data.push(event);
                     }
                 }
@@ -28,6 +51,7 @@ export class TwitterDirectMessageService {
 
             return data;
         } catch (error) {
+            console.log(error)
             throw error;
         }
     }
@@ -55,7 +79,7 @@ export class TwitterDirectMessageService {
                 text: text,
                 // attachment: {
                 //   type: 'media',
-                //   media: { id: '24024092' },
+                //   media: { id: mediaId },
                 // },
                 quick_reply: {
                     type: 'options',
@@ -77,6 +101,7 @@ export class TwitterDirectMessageService {
 
             return data;
         } catch (error) {
+            console.log(error)
             throw error;
         }
     }
