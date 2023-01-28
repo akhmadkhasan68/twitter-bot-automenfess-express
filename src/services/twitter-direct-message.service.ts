@@ -8,17 +8,16 @@ export class TwitterDirectMessageService {
     ) {}
 
     public async getListDirectMessage(): Promise<DirectMessageCreateV1[]>{
-        try {
+        try {    
             const eventsPaginator = await this.twitterClient.v1.listDmEvents();
             const data: DirectMessageCreateV1[] = [];
 
             for await (const event of eventsPaginator) {
                 if (event.type === EDirectMessageEventTypeV1.Create) {
-                    const keywords: string[] = config.TWITTER.KEYWORDS;
-
                     const directMessageData = event[EDirectMessageEventTypeV1.Create];
                     const messageData = directMessageData.message_data;
 
+                    const keywords: string[] = config.TWITTER.KEYWORDS;
                     const textMessage = messageData.text;
                     const checkStringKeyword = keywords.some(keyword => {
                         return textMessage.toLowerCase().includes(keyword.toLowerCase());
@@ -39,15 +38,20 @@ export class TwitterDirectMessageService {
                         //     media_ids: mediaIds
                         // })
 
-                        await this.twitterClient.v1.sendDm({
-                            recipient_id: directMessageData.sender_id,
-                            text: "Hore tweet anda berhasil dikirim! 🎉",
-                        });
+                        // const detailTweet = await this.twitterClient.v1.singleTweet(tweet.id_str);
+                        // console.log(detailTweet)
+
+                        // await this.twitterClient.v1.sendDm({
+                        //     recipient_id: directMessageData.sender_id,
+                        //     text: `Hore tweet anda berhasil dikirim! 🎉`,
+                        // });
 
                         data.push(event);
                     }
                 }
             }
+
+            await this.deleteDirectMessages(data.map(item => item.id));
 
             return data;
         } catch (error) {
@@ -77,25 +81,21 @@ export class TwitterDirectMessageService {
             const data = await this.twitterClient.v1.sendDm({
                 recipient_id: recepientId,
                 text: text,
-                // attachment: {
-                //   type: 'media',
-                //   media: { id: mediaId },
-                // },
-                quick_reply: {
-                    type: 'options',
-                    options: [
-                        {
-                            label: "✅ Ya, Kirim",
-                            description: "Pilih ini jika anda yakin ingin mengirim pesan diatas",
-                            metadata: "accept_id_1"
-                        },
-                        {
-                            label: "⛔️ Batalkan",
-                            description: "Pilih ini jika anda ingin membatalkan pesan diatas",
-                            metadata: "cancel_id_2"
-                        },
-                    ]
-                }
+                // quick_reply: {
+                //     type: 'options',
+                //     options: [
+                //         {
+                //             label: "✅ Ya, Kirim",
+                //             description: "Pilih ini jika anda yakin ingin mengirim pesan diatas",
+                //             metadata: "accept_id_1"
+                //         },
+                //         {
+                //             label: "⛔️ Batalkan",
+                //             description: "Pilih ini jika anda ingin membatalkan pesan diatas",
+                //             metadata: "cancel_id_2"
+                //         },
+                //     ]
+                // }
             });
 
 

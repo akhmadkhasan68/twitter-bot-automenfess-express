@@ -15,6 +15,7 @@ export default function configureRouter(app: core.Express, diContainer: IDIConta
     app.get('/direct-message', direcMessageController.listDirectMessage.bind(direcMessageController));
     app.get('/direct-message/:id', direcMessageController.getDetailDirectMessage.bind(direcMessageController));
     app.post('/direct-message', direcMessageController.sendDirectMessage.bind(direcMessageController));
+    app.post('/direct-message-test', direcMessageController.createDirectMessageDB.bind(direcMessageController));
 
     app.post('/tweet', tweetController.postTweet.bind(tweetController));
 }

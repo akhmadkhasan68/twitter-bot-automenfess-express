@@ -2,10 +2,12 @@ import { Request, Response } from "express";
 import { TwitterDirectMessageService } from "../services/twitter-direct-message.service";
 import { SuccessResponse } from "../utils/response";
 import { HttpStatusCode } from "axios";
+import { DirectMessageRepository } from "../repositories/direct-message.repository";
 
 export class DirectMessageController {
     constructor(
-        private readonly twitterDirectMessageService: TwitterDirectMessageService
+        private readonly twitterDirectMessageService: TwitterDirectMessageService,
+        private readonly directMessageRepository: DirectMessageRepository,
     ) {}
 
     public async listDirectMessage(_: Request, res: Response) {
@@ -33,6 +35,16 @@ export class DirectMessageController {
         try {
             const { recepient_id, text } = req.body;
             const data = await this.twitterDirectMessageService.sendDirectMessage(recepient_id, text);
+
+            res.status(HttpStatusCode.Ok).json(SuccessResponse.setSuccessRespose('Success send direct messages', HttpStatusCode.Ok, data));
+        } catch (error) {
+            res.json(error);
+        }
+    }
+
+    public async createDirectMessageDB(req: Request, res: Response) {
+        try {
+            const data = await this.directMessageRepository.create();
 
             res.status(HttpStatusCode.Ok).json(SuccessResponse.setSuccessRespose('Success send direct messages', HttpStatusCode.Ok, data));
         } catch (error) {

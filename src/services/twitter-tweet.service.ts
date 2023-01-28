@@ -1,6 +1,4 @@
-import { readFileSync } from "fs";
-import { config } from "../config/config";
-import { DirectMessageCreateV1, DirectMessageCreateV1Result, EDirectMessageEventTypeV1, ReceivedDMEventV1, TweetV1, TwitterApi } from "twitter-api-v2";
+import { TweetV1, TwitterApi } from "twitter-api-v2";
 
 export class TwitterTweetService {
     constructor(
