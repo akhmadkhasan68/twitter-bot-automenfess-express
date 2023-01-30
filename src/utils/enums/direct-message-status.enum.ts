@@ -1,5 +1,7 @@
 export enum DirectMessageStatusEnum {
     PENDING = "PENDING",
+    CONFIRM = "CONFIRM",
     SUCCESS = "SUCCESS",
-    CANCEL = "CACEL",
+    CANCEL = "CANCEL",
+    FAILED = "FAILED",
 }

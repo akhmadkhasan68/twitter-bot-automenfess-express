@@ -1,5 +1,5 @@
 import { config } from "../config/config";
-import { DirectMessageCreateV1, DirectMessageCreateV1Result, EDirectMessageEventTypeV1, ReceivedDMEventV1, TwitterApi, ReceivedMessageCreateEventV1 } from "twitter-api-v2";
+import { DirectMessageCreateV1, DirectMessageCreateV1Result, EDirectMessageEventTypeV1, ReceivedDMEventV1, TwitterApi, ReceivedMessageCreateEventV1, MessageCreateQuickReplyV1 } from "twitter-api-v2";
 import { fromBuffer } from 'file-type';
 
 export class TwitterDirectMessageService {
@@ -7,7 +7,7 @@ export class TwitterDirectMessageService {
         private readonly twitterClient: TwitterApi
     ) {}
 
-    public async getListDirectMessage(): Promise<DirectMessageCreateV1[]>{
+    public async getListDirectMessage(filterKeyword: boolean = false): Promise<DirectMessageCreateV1[]>{
         try {    
             const eventsPaginator = await this.twitterClient.v1.listDmEvents();
             const data: DirectMessageCreateV1[] = [];
@@ -23,7 +23,7 @@ export class TwitterDirectMessageService {
                         return textMessage.toLowerCase().includes(keyword.toLowerCase());
                     });
 
-                    if(checkStringKeyword) {
+                    if(checkStringKeyword && filterKeyword) {
                         // const mediaIds: string[] = [];
                         // if(messageData.attachment) {
                         //     const media: Buffer = await this.twitterClient.v1.downloadDmImage(messageData?.attachment.media.media_url);
@@ -47,11 +47,13 @@ export class TwitterDirectMessageService {
                         // });
 
                         data.push(event);
+                    } else {
+                        data.push(event);
                     }
                 }
             }
 
-            await this.deleteDirectMessages(data.map(item => item.id));
+            // await this.deleteDirectMessages(data.map(item => item.id));
 
             return data;
         } catch (error) {
@@ -76,28 +78,13 @@ export class TwitterDirectMessageService {
         });
     }
 
-    public async sendDirectMessage(recepientId: string, text: string): Promise<DirectMessageCreateV1Result> {
+    public async sendDirectMessage(recepientId: string, text: string, quickReply?: MessageCreateQuickReplyV1): Promise<DirectMessageCreateV1Result> {
         try {
             const data = await this.twitterClient.v1.sendDm({
                 recipient_id: recepientId,
                 text: text,
-                // quick_reply: {
-                //     type: 'options',
-                //     options: [
-                //         {
-                //             label: "✅ Ya, Kirim",
-                //             description: "Pilih ini jika anda yakin ingin mengirim pesan diatas",
-                //             metadata: "accept_id_1"
-                //         },
-                //         {
-                //             label: "⛔️ Batalkan",
-                //             description: "Pilih ini jika anda ingin membatalkan pesan diatas",
-                //             metadata: "cancel_id_2"
-                //         },
-                //     ]
-                // }
+                quick_reply: quickReply
             });
-
 
             return data;
         } catch (error) {

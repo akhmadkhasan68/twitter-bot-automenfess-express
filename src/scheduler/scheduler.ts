@@ -1,16 +1,22 @@
 import { CronJob } from "cron";
-import { TwitterDirectMessageService } from "../services/twitter-direct-message.service";
+import { SchedulerService } from "../services/scheduler.service";
 
 export class Scheduler {
     constructor(
-        private readonly twitterDirectMessageService: TwitterDirectMessageService,
+        private readonly schedulerService: SchedulerService,
     ) {}
 
     public initScheduler() {
-        const schedulerEveryMinute = new CronJob('1 * * * * *', async () => {
-            // const getDirectMessage = await this.twitterDirectMessageService.getListDirectMessage();
-        });
-        
-        schedulerEveryMinute.start();
+        try {
+            const schedulerEveryMinute = new CronJob('* * * * * *', async () => {
+                // const getDirectMessage = await this.twitterDirectMessageService.getListDirectMessage();
+                // await this.schedulerService.syncDirectMessageToDatabase();
+                // await this.schedulerService.sendConfirmationPendingDirectMessage();
+            });
+            
+            schedulerEveryMinute.start();
+        } catch (error) {
+            console.log(error);
+        }
     }
 }

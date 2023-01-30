@@ -46,7 +46,7 @@ export class DirectMessageModel extends Model implements IDirectMessage {
     media_url!: string;
 
     @Column({
-        type: DataType.ENUM(DirectMessageStatusEnum.PENDING, DirectMessageStatusEnum.SUCCESS, DirectMessageStatusEnum.CANCEL),
+        type: DataType.ENUM(DirectMessageStatusEnum.PENDING, DirectMessageStatusEnum.CONFIRM, DirectMessageStatusEnum.SUCCESS, DirectMessageStatusEnum.CANCEL, DirectMessageStatusEnum.FAILED),
         allowNull: false,
         defaultValue: DirectMessageStatusEnum.PENDING
     })

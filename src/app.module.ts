@@ -6,6 +6,7 @@ import { TwitterTweetService } from "./services/twitter-tweet.service";
 import { TweetController } from "./controllers/tweet.controller";
 import { Scheduler } from "./scheduler/scheduler";
 import { DirectMessageRepository } from "./repositories/direct-message.repository";
+import { SchedulerService } from "./services/scheduler.service";
 
 
 export default function configureDI(twitterClient: TwitterApi): IDIContainer {
@@ -22,6 +23,11 @@ export default function configureDI(twitterClient: TwitterApi): IDIContainer {
         [TwitterTweetService.name]: object(TwitterTweetService).construct(
             twitterClient
         ),
+        [SchedulerService.name]: object(SchedulerService).construct(
+            use(TwitterDirectMessageService),
+            use(TwitterTweetService),
+            use(DirectMessageRepository)
+        ),
 
         //contoller
         [DirectMessageController.name]: object(DirectMessageController).construct(
@@ -34,7 +40,7 @@ export default function configureDI(twitterClient: TwitterApi): IDIContainer {
 
         //scheduler
         [Scheduler.name]: object(Scheduler).construct(
-            use(TwitterDirectMessageService)
+            use(SchedulerService)
         ),
     });
 

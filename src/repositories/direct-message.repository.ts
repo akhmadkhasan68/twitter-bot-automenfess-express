@@ -12,4 +12,12 @@ export class DirectMessageRepository {
             created_at: new Date
         });
     }
+
+    public async getAllDirectMessageFilterStatus(status: DirectMessageStatusEnum) {
+        return await DirectMessageModel.findAll({
+            where: {
+                status: status
+            }
+        });
+    }
 }
