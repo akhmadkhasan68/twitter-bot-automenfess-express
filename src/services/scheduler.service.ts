@@ -1,4 +1,4 @@
-import { EDirectMessageEventTypeV1 } from "twitter-api-v2";
+import { DirectMessageCreateV1, EDirectMessageEventTypeV1, TweetV1 } from "twitter-api-v2";
 import { IDirectMessage } from "../database/interfaces/direct-message.interface";
 import { DirectMessageRepository } from "../repositories/direct-message.repository";
 import { TwitterDirectMessageService } from "./twitter-direct-message.service";
@@ -7,17 +7,21 @@ import { DirectMessageStatusEnum } from "../utils/enums/direct-message-status.en
 import { DirectMessageModel } from "../database/models/direct-message.model";
 import { TwitterQuickReplyConfirmPosyMetadataEnum } from "../utils/enums/twitter-quick-reply-confirm-post-metadata.enum";
 import { config } from "../config/config";
+import { fromBuffer } from "file-type";
+import { TwitterMediaService } from "./twitter-media.service";
 
 export class SchedulerService {
     constructor(
         private readonly twitterDirectMessageService: TwitterDirectMessageService,
         private readonly twitterTweetService: TwitterTweetService,
         private readonly directMessageRepository: DirectMessageRepository,
+        private readonly twitterMediaService: TwitterMediaService,
     ) {}
 
     public async syncDirectMessageToDatabase(): Promise<IDirectMessage[]> {
         try {
             const messages = await this.twitterDirectMessageService.getListDirectMessage(true);
+
             if(messages.length == 0) {
                 return [];
             }
@@ -26,7 +30,7 @@ export class SchedulerService {
                 return {
                     sender_id: message[EDirectMessageEventTypeV1.Create].sender_id,
                     created_timestamp: message.created_timestamp,
-                    text: message[EDirectMessageEventTypeV1.Create].message_data.text,
+                    text: message[EDirectMessageEventTypeV1.Create].message_data.text.replace(/(?:https?|ftp):\/\/[\n\S]+/g, ''),
                     media_url: message[EDirectMessageEventTypeV1.Create].message_data?.attachment?.media?.media_url || '',
                     status: DirectMessageStatusEnum.PENDING,
                     message_id: message.id,
@@ -50,7 +54,16 @@ export class SchedulerService {
 
             for(let message of confirmedDirectMessage) {
                 //post tweet
-                const tweet = await this.twitterTweetService.postTweet(message.text);
+                let tweet: TweetV1;
+                if(message.media_url != "" || message.media_url != null) {
+                    const media: Buffer = await this.twitterDirectMessageService.downloadMediaDirectMessage(message?.media_url);
+                    const { mime } = await fromBuffer(media);
+                    const mediaId = await this.twitterMediaService.uploadMedia(media, mime);
+
+                    tweet = await this.twitterTweetService.postTweet(message.text, [mediaId]);
+                }else{
+                    tweet = await this.twitterTweetService.postTweet(message.text);
+                }
 
                 //send message to sender
                 const tweetUrl = `https://twitter.com/${config.TWITTER.USERNAME}/status/${tweet.id_str}`;

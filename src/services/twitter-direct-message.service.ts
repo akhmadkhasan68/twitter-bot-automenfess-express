@@ -73,7 +73,7 @@ export class TwitterDirectMessageService {
         }
     }
 
-    public async deleteDirectMessages(tweetId: string | string[]): Promise<any> {
+    public async deleteDirectMessages(tweetId: string | string[]): Promise<void> {
         if(Array.isArray(tweetId)) {
             return tweetId.forEach(async (id) => {
                 return this.twitterClient.v1.deleteDm(id);
@@ -96,5 +96,9 @@ export class TwitterDirectMessageService {
             console.log(error)
             throw error;
         }
+    }
+
+    public async downloadMediaDirectMessage(mediaUrl: string): Promise<Buffer> {
+        return await this.twitterClient.v1.downloadDmImage(mediaUrl);
     }
 }

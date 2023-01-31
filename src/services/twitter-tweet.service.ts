@@ -7,7 +7,7 @@ export class TwitterTweetService {
 
     public async postTweet(status: string, mediaIds?: string[]): Promise<TweetV1> {
         try {
-            return this.twitterClient.v1.tweet(status, {
+            return await this.twitterClient.v1.tweet(status, {
                 media_ids: mediaIds
             });
         } catch (error) {
@@ -17,7 +17,7 @@ export class TwitterTweetService {
     
     public async showDetailTweet(tweetId: string): Promise<TweetV1> {
         try {
-            return this.twitterClient.v1.singleTweet(tweetId, {
+            return await this.twitterClient.v1.singleTweet(tweetId, {
                 include_card_uri: true,
                 tweet_mode: 'extended',
                 include_entities: true,
