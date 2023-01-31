@@ -11,6 +11,7 @@ export const config = {
         ACCESS_KEY: process.env.TWITTER_ACCESS_KEY || '',
         ACCESS_SECRET: process.env.TWITTER_ACCESS_SECRET || '',
         KEYWORDS: JSON.parse(process.env.TWITTER_KEYWORDS) || [],
+        USERNAME: process.env.TWITTER_USERNAME || '',
     },
     DATABASE: {
         HOST: process.env.DB_HOST || 'localhost',

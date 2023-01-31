@@ -47,9 +47,10 @@ export class TwitterDirectMessageService {
                         // });
 
                         data.push(event);
-                    } else {
-                        data.push(event);
-                    }
+                    } 
+                    // else {
+                    //     data.push(event);
+                    // }
                 }
             }
 
@@ -72,10 +73,14 @@ export class TwitterDirectMessageService {
         }
     }
 
-    public async deleteDirectMessages(ids: string[]): Promise<any> {
-        return ids.forEach(async (id) => {
-            return this.twitterClient.v1.deleteDm(id);
-        });
+    public async deleteDirectMessages(tweetId: string | string[]): Promise<any> {
+        if(Array.isArray(tweetId)) {
+            return tweetId.forEach(async (id) => {
+                return this.twitterClient.v1.deleteDm(id);
+            });
+        }
+
+        return this.twitterClient.v1.deleteDm(tweetId);
     }
 
     public async sendDirectMessage(recepientId: string, text: string, quickReply?: MessageCreateQuickReplyV1): Promise<DirectMessageCreateV1Result> {

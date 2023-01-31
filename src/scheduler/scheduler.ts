@@ -8,11 +8,12 @@ export class Scheduler {
 
     public initScheduler() {
         try {
-            const schedulerEveryMinute = new CronJob('* * * * * *', async () => {
+            const schedulerEveryMinute = new CronJob('0 * * * * *', async () => {
                 // const getDirectMessage = await this.twitterDirectMessageService.getListDirectMessage();
                 // await this.schedulerService.syncDirectMessageToDatabase();
                 // await this.schedulerService.sendConfirmationPendingDirectMessage();
             });
+
             
             schedulerEveryMinute.start();
         } catch (error) {

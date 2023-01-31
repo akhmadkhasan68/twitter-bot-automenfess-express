@@ -32,10 +32,12 @@ export default function configureDI(twitterClient: TwitterApi): IDIContainer {
         //contoller
         [DirectMessageController.name]: object(DirectMessageController).construct(
             use(TwitterDirectMessageService),
-            use(DirectMessageRepository)
+            use(DirectMessageRepository),
+            use(SchedulerService)
         ),
         [TweetController.name]: object(TweetController).construct(
-            use(TwitterTweetService)
+            use(TwitterTweetService),
+            use(SchedulerService)
         ),
 
         //scheduler

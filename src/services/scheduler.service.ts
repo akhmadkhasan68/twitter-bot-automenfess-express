@@ -1,12 +1,12 @@
 import { EDirectMessageEventTypeV1 } from "twitter-api-v2";
 import { IDirectMessage } from "../database/interfaces/direct-message.interface";
 import { DirectMessageRepository } from "../repositories/direct-message.repository";
-import { TwitterClientAuthService } from "./twitter-client-auth.service";
 import { TwitterDirectMessageService } from "./twitter-direct-message.service";
 import { TwitterTweetService } from "./twitter-tweet.service";
 import { DirectMessageStatusEnum } from "../utils/enums/direct-message-status.enum";
 import { DirectMessageModel } from "../database/models/direct-message.model";
 import { TwitterQuickReplyConfirmPosyMetadataEnum } from "../utils/enums/twitter-quick-reply-confirm-post-metadata.enum";
+import { config } from "../config/config";
 
 export class SchedulerService {
     constructor(
@@ -27,17 +27,44 @@ export class SchedulerService {
                     sender_id: message[EDirectMessageEventTypeV1.Create].sender_id,
                     created_timestamp: message.created_timestamp,
                     text: message[EDirectMessageEventTypeV1.Create].message_data.text,
-                    media_url: message[EDirectMessageEventTypeV1.Create].message_data?.attachment.media.media_url || '',
+                    media_url: message[EDirectMessageEventTypeV1.Create].message_data?.attachment?.media?.media_url || '',
                     status: DirectMessageStatusEnum.PENDING,
                     message_id: message.id,
                 };
             });
 
-            console.log(messagesData);
+            return await DirectMessageModel.bulkCreate(messagesData);
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
+    }
 
-            const saveToDb = await DirectMessageModel.bulkCreate(messagesData);
-            console.log(saveToDb);
-            return saveToDb;
+    public async postTweetConfirmedDirectMessage(): Promise<any> {
+        try {
+            const confirmedDirectMessage = await this.directMessageRepository.getAllDirectMessageFilterStatus(DirectMessageStatusEnum.CONFIRM);
+            
+            if(confirmedDirectMessage.length == 0) {
+                return [];
+            }
+
+            for(let message of confirmedDirectMessage) {
+                //post tweet
+                const tweet = await this.twitterTweetService.postTweet(message.text);
+
+                //send message to sender
+                const tweetUrl = `https://twitter.com/${config.TWITTER.USERNAME}/status/${tweet.id_str}`;
+                await this.twitterDirectMessageService.sendDirectMessage(message.sender_id, `Hore tweet anda berhasil dikirim 🎉 ${tweetUrl}`);
+
+                //delete message
+                await this.twitterDirectMessageService.deleteDirectMessages(message.message_id);
+
+                //update status
+                message.status = DirectMessageStatusEnum.SUCCESS;
+                message.save();
+            }
+
+            return confirmedDirectMessage;
         } catch (error) {
             console.log(error);
             throw error;
@@ -72,6 +99,7 @@ export class SchedulerService {
                 message.save();
             }
         } catch (error) {
+            console.log(error);
             throw error;
         }
     }
