@@ -10,7 +10,7 @@ export class Scheduler {
         try {
             const schedulerEveryMinute = new CronJob('0 * * * * *', async () => {
                 // await this.schedulerService.syncDirectMessageToDatabase();
-                // await this.schedulerService.sendConfirmationPendingDirectMessage();
+                // await this.schedulerService.postTweetConfirmedDirectMessage();
             });
 
             

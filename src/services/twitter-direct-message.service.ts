@@ -23,38 +23,15 @@ export class TwitterDirectMessageService {
                         return textMessage.toLowerCase().includes(keyword.toLowerCase());
                     });
 
-                    if(checkStringKeyword && filterKeyword) {
-                        // const mediaIds: string[] = [];
-                        // if(messageData.attachment) {
-                        //     const media: Buffer = await this.twitterClient.v1.downloadDmImage(messageData?.attachment.media.media_url);
-                        //     const { mime } = await fromBuffer(media);
-                        //     const mediaId = await this.twitterClient.v1.uploadMedia(media, {
-                        //         mimeType: mime
-                        //     });
-                        //     mediaIds.push(mediaId);
-                        // }
-                        
-                        // const tweet = await this.twitterClient.v1.tweet(textMessage, {
-                        //     media_ids: mediaIds
-                        // })
-
-                        // const detailTweet = await this.twitterClient.v1.singleTweet(tweet.id_str);
-                        // console.log(detailTweet)
-
-                        // await this.twitterClient.v1.sendDm({
-                        //     recipient_id: directMessageData.sender_id,
-                        //     text: `Hore tweet anda berhasil dikirim! 🎉`,
-                        // });
-
+                    if(filterKeyword) {
+                        if(checkStringKeyword) {
+                            data.push(event);
+                        }
+                    }else{
                         data.push(event);
-                    } 
-                    // else {
-                    //     data.push(event);
-                    // }
+                    }
                 }
             }
-
-            // await this.deleteDirectMessages(data.map(item => item.id));
 
             return data;
         } catch (error) {

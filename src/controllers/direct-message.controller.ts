@@ -14,8 +14,7 @@ export class DirectMessageController {
 
     public async listDirectMessage(_: Request, res: Response) {
         try {
-            // const data = await this.twitterDirectMessageService.getListDirectMessage(true);
-            const data = await this.schedulerService.syncDirectMessageToDatabase();
+            const data = await this.twitterDirectMessageService.getListDirectMessage(true);
 
             console.log(data);
 

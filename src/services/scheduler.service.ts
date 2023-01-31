@@ -21,7 +21,8 @@ export class SchedulerService {
     public async syncDirectMessageToDatabase(): Promise<IDirectMessage[]> {
         try {
             const messages = await this.twitterDirectMessageService.getListDirectMessage(true);
-
+            console.log(messages);
+            
             if(messages.length == 0) {
                 return [];
             }
@@ -32,7 +33,7 @@ export class SchedulerService {
                     created_timestamp: message.created_timestamp,
                     text: message[EDirectMessageEventTypeV1.Create].message_data.text.replace(/(?:https?|ftp):\/\/[\n\S]+/g, ''),
                     media_url: message[EDirectMessageEventTypeV1.Create].message_data?.attachment?.media?.media_url || '',
-                    status: DirectMessageStatusEnum.PENDING,
+                    status: DirectMessageStatusEnum.CONFIRM, //todo ubah menjadi PENDING dan butuh konfirmasi dulu
                     message_id: message.id,
                 };
             });
@@ -55,8 +56,7 @@ export class SchedulerService {
             for(let message of confirmedDirectMessage) {
                 //post tweet
                 let tweet: TweetV1;
-                const withMedia = message.media_url != "" || message.media_url != null;
-                if(withMedia) {
+                if(message.media_url) {
                     const media: Buffer = await this.twitterDirectMessageService.downloadMediaDirectMessage(message?.media_url);
                     const { mime } = await fromBuffer(media);
                     const mediaId = await this.twitterMediaService.uploadMedia(media, mime);
@@ -85,6 +85,7 @@ export class SchedulerService {
         }
     }
 
+    //todo bakal kepakai untuk confirm send tweet
     public async sendConfirmationPendingDirectMessage(): Promise<any> {
         try {
             const pendingDirectMessage = await this.directMessageRepository.getAllDirectMessageFilterStatus(DirectMessageStatusEnum.PENDING);
