@@ -19,6 +19,7 @@ export class Scheduler {
             
             schedulerEveryMinute.start();
         } catch (error) {
+            console.log(error);
             this.initScheduler();
         }
     }
