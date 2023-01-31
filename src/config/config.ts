@@ -3,7 +3,7 @@ dotenv.config();
 
 export const config = {
     APPLICATION: {
-        PORT: process.env.PORT || '8090'
+        PORT: process.env.PORT || '3000'
     },
     TWITTER : {
         CONSUMER_KEY: process.env.TWITTER_CONSUMER_KEY || '',
