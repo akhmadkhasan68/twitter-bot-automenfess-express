@@ -55,7 +55,8 @@ export class SchedulerService {
             for(let message of confirmedDirectMessage) {
                 //post tweet
                 let tweet: TweetV1;
-                if(message.media_url != "" || message.media_url != null) {
+                const withMedia = message.media_url != "" || message.media_url != null;
+                if(withMedia) {
                     const media: Buffer = await this.twitterDirectMessageService.downloadMediaDirectMessage(message?.media_url);
                     const { mime } = await fromBuffer(media);
                     const mediaId = await this.twitterMediaService.uploadMedia(media, mime);
