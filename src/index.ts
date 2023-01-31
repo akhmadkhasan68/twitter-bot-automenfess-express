@@ -17,7 +17,7 @@ app.use(bodyParser.urlencoded({ extended: true }))
 //init database
 connection.sync({ alter: true })
 .then(() => {
-  console.log("Database successfully connected");
+  console.log("Database successfully connected... 🚀");
 })
 .catch((err) => {
   console.log("Error", err);
@@ -35,4 +35,4 @@ configureRouter(app, diContainer)
 const scheduler = diContainer.get(Scheduler);
 scheduler.initScheduler.bind(scheduler.initScheduler());
 
-app.listen(port, () => console.log(`Application running on port ${port}`))
+app.listen(port, () => console.log(`Application running on port ${port}... 🚀`))
