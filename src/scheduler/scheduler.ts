@@ -11,15 +11,15 @@ export class Scheduler {
             const schedulerEveryMinute = new CronJob('0 * * * * *', async () => {
                 console.log('run sync direct message to db... 🚀');
                 await this.schedulerService.syncDirectMessageToDatabase();
-                
-                console.log('post tweet confirmed... 🚀');
+
+                console.log('run post tweet confirmed... 🚀');
                 await this.schedulerService.postTweetConfirmedDirectMessage();
             });
 
             
             schedulerEveryMinute.start();
         } catch (error) {
-            console.log(error);
+            this.initScheduler();
         }
     }
 }
