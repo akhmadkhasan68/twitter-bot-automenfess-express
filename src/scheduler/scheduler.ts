@@ -9,8 +9,8 @@ export class Scheduler {
     public initScheduler() {
         try {
             const schedulerEveryMinute = new CronJob('0 * * * * *', async () => {
-                // await this.schedulerService.syncDirectMessageToDatabase();
-                // await this.schedulerService.postTweetConfirmedDirectMessage();
+                await this.schedulerService.syncDirectMessageToDatabase();
+                await this.schedulerService.postTweetConfirmedDirectMessage();
             });
 
             
